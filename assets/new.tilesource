@@ -1,0 +1,32 @@
+image: "/assets/imgs/wall.png"
+tile_width: 32
+tile_height: 32
+tile_margin: 0
+tile_spacing: 0
+collision: "/assets/imgs/wall.png"
+material_tag: "tile"
+convex_hulls {
+  index: 0
+  count: 4
+  collision_group: "white"
+}
+convex_hulls {
+  index: 4
+  count: 4
+  collision_group: "black"
+}
+convex_hulls {
+  index: 8
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 8
+  count: 0
+  collision_group: ""
+}
+collision_groups: "black"
+collision_groups: "white"
+extrude_borders: 2
+inner_padding: 0
+sprite_trim_mode: SPRITE_TRIM_MODE_OFF
