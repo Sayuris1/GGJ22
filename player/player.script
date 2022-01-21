@@ -79,14 +79,21 @@ function init(self)
     self.is_jump = false
     self.can_jump = true
 
+    self.hang_time = 0
+    self.is_wall = false
+    self.is_slide = true
+
     go.property("max_x", 400)
     go.property("velocity_scale", 600)
     go.property("friction", 5)
 
     go.property("gravity", 3000)
     go.property("max_y", 400)
-    go.property("max_jump", 0.5)
+    go.property("max_jump", 0.4)
     go.property("jump_speed", 2000)
+
+    go.property("max_hang", 1)
+    go.property("wall_slide", 0.2)
 
     -- Collisin variables
     self.groups = { hash("white") }
@@ -117,8 +124,10 @@ function update(self, dt)
     local dest = self.position.x + self.velocity_x * dt
     if velo_abs > friction then
         if is_raycast_sides(self, dest) then
+            self.is_wall = true
             self.velocity_x = self.velocity_x / 2
         else
+            self.is_wall = false
             self.position.x = dest
         end
     end
@@ -136,15 +145,33 @@ function update(self, dt)
 	end
 
     -- Max
-    self.velocity_y = clamp_to_max(self.velocity_y, self.max_y,
-                                   math.abs(self.velocity_y))
+    velo_abs = math.abs(self.velocity_y)
+    self.velocity_y = clamp_to_max(self.velocity_y, self.max_y, velo_abs)
 
     -- Check collision
     dest = self.position.y + self.velocity_y * dt
-    if is_raycast_down(self, dest) then
+    local is_down = is_raycast_down(self, dest)
+    if is_down then
         self.velocity_y = self.velocity_y / 2
 		self.can_jump = true
 		self.jump_time = 0
+
+        self.hang_time = self.max_hang
+        self.is_slide = true
+
+    -- On wall actions
+    elseif self.is_wall then
+        if self.hang_time > 0 then
+            if self.velocity_y <= 0 then
+                self.velocity_y = 0
+                self.hang_time = self.hang_time - dt
+            elseif self.is_slide then
+                self.is_slide = false
+                self.jump_time = self.jump_time - self.wall_slide
+            end
+        end
+
+        self.position.y = dest
     else
         self.position.y = dest
     end
