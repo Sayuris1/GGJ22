@@ -71,6 +71,25 @@ local function is_raycast_down(self, dest)
     return false
 end
 
+local function is_raycast_up(self, dest)
+    local option = { all = true }
+    -- Right to down
+    local from = vmath.vector3(self.position);
+    from.x = from.x + 16
+    local to = vmath.vector3(from);
+    to.y = dest + 24
+    local is_right = physics.raycast(from, to, self.groups, option)
+    -- Left to down
+    from = vmath.vector3(self.position);
+    from.x = from.x - 16
+    to = vmath.vector3(from);
+    to.y = dest + 24
+    local is_left = physics.raycast(from, to, self.groups, option)
+
+    if is_right or is_left then return true end
+    return false
+end
+
 function init(self)
     msg.post(".", "acquire_input_focus")
     -- Movement variables
@@ -186,6 +205,7 @@ function update(self, dt)
     -- Check collision
     dest = self.position.y + self.velocity_y * dt
     local is_down = is_raycast_down(self, dest)
+    local is_up = is_raycast_up(self, dest)
     if is_down then
         self.velocity_y = self.velocity_y / 2
         self.can_jump = true
@@ -209,8 +229,10 @@ function update(self, dt)
             end
         end
 
-        self.position.y = dest
-    else
+        if not is_up then
+            self.position.y = dest
+        end
+    elseif not is_up then
         self.position.y = dest
     end
 
