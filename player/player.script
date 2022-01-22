@@ -92,8 +92,10 @@ end
 
 function init(self)
     msg.post(".", "acquire_input_focus")
+    msg.post("@render:", "clear_color", { color = vmath.vector4(1, 0, 0, 0) } )
     -- Movement variables
-    self.position = go.get_position()
+    self.start_pos = go.get_position()
+    self.position = self.start_pos
 
     self.velocity_x = 0
     self.steering = 0
@@ -127,8 +129,15 @@ function init(self)
     go.property("wall_jump_speed", 4000)
     go.property("wall_jump_side", 30)
 
-    -- Collisin variables
-    self.groups = { hash("white") }
+    go.property("type", hash("white"))
+
+    if self.type == hash("white") then
+        msg.post("/map#black_collision", "disable")
+        msg.post("/black", "disable")
+    end
+
+    -- Collision variables
+    self.groups = { self.type }
 end
 
 function update(self, dt)
@@ -239,7 +248,26 @@ function update(self, dt)
     go.set_position(self.position)
 end
 
-function on_message(self, message_id, message, sender) end
+function on_message(self, message_id, message, sender)
+    if message_id == CONTACT then
+        go.set_position(self.start_pos)
+
+        msg.post(".", "disable")
+
+        if self.type == hash("white") then
+            msg.post("/map#black_collision", "enable")
+            msg.post("/map#white_collision", "disable")
+            msg.post("/black", "enable")
+        else
+            msg.post("/map#white_collision", "enable")
+            msg.post("/map#black_collision", "disable")
+            msg.post("/white", "enable")
+        end
+
+    elseif message_id == hash("enable") then
+        go.set_position(self.start_pos)
+    end
+end
 
 function on_input(self, action_id, action)
     -- Get steering

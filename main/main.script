@@ -1,0 +1,29 @@
+local NEXT_LVL = hash("next_lvl")
+local UNLOADED = hash("proxy_unloaded")
+local LOADED = hash("proxy_loaded")
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+
+    self.current_lvl = 1
+    self.proxy_url = msg.url("#lvl1")
+
+    msg.post(self.proxy_url, "load")
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == NEXT_LVL then
+        self.proxy_url = msg.url("#lvl" .. self.current_lvl)
+        msg.post(self.proxy_url, "disable")
+        msg.post(self.proxy_url, "final")
+        msg.post(self.proxy_url, "unload")
+
+        self.current_lvl = self.current_lvl + 1
+
+    elseif message_id == UNLOADED then
+        msg.post(self.proxy_url, "load")
+
+    elseif message_id == LOADED then
+        msg.post(self.proxy_url, "enable")
+    end
+end

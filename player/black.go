@@ -12,12 +12,17 @@ components {
     z: 0.0
     w: 1.0
   }
+  properties {
+    id: "type"
+    value: "black"
+    type: PROPERTY_TYPE_HASH
+  }
 }
 embedded_components {
   id: "sprite"
   type: "sprite"
   data: "tile_set: \"/assets/main.atlas\"\n"
-  "default_animation: \"white\"\n"
+  "default_animation: \"black\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""
@@ -41,8 +46,8 @@ embedded_components {
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"white_player\"\n"
-  "mask: \"white_hit\"\n"
+  "group: \"black_player\"\n"
+  "mask: \"black_hit\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"
