@@ -3,7 +3,6 @@ local UNLOADED = hash("proxy_unloaded")
 local LOADED = hash("proxy_loaded")
 
 function init(self)
-    pprint(msg.url())
     msg.post(".", "acquire_input_focus")
 
     self.current_lvl = 1
