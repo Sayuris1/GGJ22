@@ -90,9 +90,11 @@ local function is_raycast_up(self, dest)
     return false
 end
 
+local active = hash("white")
+
 function init(self)
     msg.post(".", "acquire_input_focus")
-    msg.post("@render:", "clear_color", { color = vmath.vector4(1, 0, 0, 0) } )
+    msg.post("@render:", "clear_color", { color = vmath.vector4(1, 0, 0, 0) })
     -- Movement variables
     self.start_pos = go.get_position()
     self.position = self.start_pos
@@ -104,6 +106,7 @@ function init(self)
     self.jump_time = 0
     self.is_jump = false
     self.can_jump = true
+    self.is_down = true
 
     self.hang_time = 0
     self.wall = 0
@@ -141,111 +144,125 @@ function init(self)
 end
 
 function update(self, dt)
-    ---------- Movement update ----------
-    ----- X direction -----
-    self.position = go.get_position()
+    if active == self.type then
+        ---------- Movement update ----------
+        ----- X direction -----
+        self.position = go.get_position()
 
-    -- Apply friction if no button pressed
-    local friction = self.friction * self.velocity_scale * dt
-    if self.is_wall_jump then
-        self.velocity_x = self.velocity_x - self.wall * self.wall_jump_side *
-                              self.velocity_scale * dt
-    elseif self.steering <= 0 and self.velocity_x > 0 and self.wall_jump == 0 then
-        self.velocity_x = self.velocity_x - friction
-    elseif self.steering >= 0 and self.velocity_x < 0 and self.wall_jump == 0 then
-        self.velocity_x = self.velocity_x + friction
-    else
-        if self.wall_jump == 0 then
-            self.velocity_x = self.velocity_x + self.steering *
-                                  self.velocity_scale * dt
+        -- Apply friction if no button pressed
+        local friction = self.friction * self.velocity_scale * dt
+        if self.is_wall_jump then
+            self.velocity_x = self.velocity_x - self.wall * self.wall_jump_side *
+                                self.velocity_scale * dt
+        elseif self.steering <= 0 and self.velocity_x > 0 and self.wall_jump == 0 then
+            self.velocity_x = self.velocity_x - friction
+            if self.steering < 0 then
+                self.velocity_x = self.velocity_x + self.steering *
+                                    self.velocity_scale * dt
+                if self.is_down then
+                    particlefx.play("#change_r")
+                end
+            end
+        elseif self.steering >= 0 and self.velocity_x < 0 and self.wall_jump == 0 then
+            self.velocity_x = self.velocity_x + friction
+            if self.steering > 0 then
+                self.velocity_x = self.velocity_x + self.steering *
+                                    self.velocity_scale * dt
+                if self.is_down then
+                    particlefx.play("#change_l")
+                end
+            end
         else
-            self.velocity_x = self.velocity_x + self.steering * 3 *
-                                  self.velocity_scale * dt
-        end
-    end
-
-    -- Max
-    local velo_abs = math.abs(self.velocity_x)
-    self.velocity_x = clamp_to_max(self.velocity_x, self.max_x, velo_abs)
-
-    -- Prevent viggle and check collision
-    local dest = self.position.x + self.velocity_x * dt
-    if velo_abs > friction then
-        local new_wall = is_raycast_sides(self, dest)
-        if new_wall ~= 0 and new_wall ~= self.wall then
-            self.is_wall_jump = false
-            dest = 0
-            self.hang_time = self.max_hang
-        end
-
-        self.wall = new_wall
-
-        if self.wall ~= 0 then
-            self.velocity_x = self.velocity_x / 2
-
-        else
-            self.position.x = dest
-        end
-    end
-
-    ----- Y direction -----
-    if self.is_jump then
-        if self.jump_time < self.max_jump then
-            self.jump_time = self.jump_time + dt
-            self.velocity_y = self.velocity_y + self.jump_speed * dt
-        else
-            self.is_jump = false
-        end
-    elseif self.is_wall_jump then
-        if self.wall_jump_time < self.max_wall_jump then
-            self.wall_jump_time = self.wall_jump_time + dt
-            self.velocity_y = self.velocity_y + self.wall_jump_speed * dt
-        else
-            self.is_wall_jump = false
-        end
-    else
-        self.velocity_y = self.velocity_y - self.gravity * dt
-    end
-
-    -- Max
-    velo_abs = math.abs(self.velocity_y)
-    self.velocity_y = clamp_to_max(self.velocity_y, self.max_y, velo_abs)
-
-    -- Check collision
-    dest = self.position.y + self.velocity_y * dt
-    local is_down = is_raycast_down(self, dest)
-    local is_up = is_raycast_up(self, dest)
-    if is_down then
-        self.velocity_y = self.velocity_y / 2
-        self.can_jump = true
-        self.jump_time = 0
-
-        self.hang_time = self.max_hang
-        self.is_slide = true
-
-        self.wall_jump = 0
-        self.wall_jump_time = 0
-
-        -- On wall actions
-    elseif self.wall ~= 0 then
-        if self.hang_time > 0 then
-            if self.velocity_y <= 0 then
-                self.velocity_y = 0
-                self.hang_time = self.hang_time - dt
-            elseif self.is_slide then
-                self.is_slide = false
-                self.jump_time = self.jump_time - self.wall_slide
+            if self.wall_jump == 0 then
+                self.velocity_x = self.velocity_x + self.steering *
+                                    self.velocity_scale * dt
+            else
+                self.velocity_x = self.velocity_x + self.steering * 3 *
+                                    self.velocity_scale * dt
             end
         end
 
-        if not is_up then
+        -- Max
+        local velo_abs = math.abs(self.velocity_x)
+        self.velocity_x = clamp_to_max(self.velocity_x, self.max_x, velo_abs)
+
+        -- Prevent viggle and check collision
+        local dest = self.position.x + self.velocity_x * dt
+        if velo_abs > friction then
+            local new_wall = is_raycast_sides(self, dest)
+            if new_wall ~= 0 and new_wall ~= self.wall then
+                self.is_wall_jump = false
+                dest = 0
+                self.hang_time = self.max_hang
+            end
+
+            self.wall = new_wall
+
+            if self.wall ~= 0 then
+                self.velocity_x = self.velocity_x / 2
+
+            else
+                self.position.x = dest
+            end
+        end
+
+        ----- Y direction -----
+        if self.is_jump then
+            if self.jump_time < self.max_jump then
+                self.jump_time = self.jump_time + dt
+                self.velocity_y = self.velocity_y + self.jump_speed * dt
+            else
+                self.is_jump = false
+            end
+        elseif self.is_wall_jump then
+            if self.wall_jump_time < self.max_wall_jump then
+                self.wall_jump_time = self.wall_jump_time + dt
+                self.velocity_y = self.velocity_y + self.wall_jump_speed * dt
+            else
+                self.is_wall_jump = false
+            end
+        else
+            self.velocity_y = self.velocity_y - self.gravity * dt
+        end
+
+        -- Max
+        velo_abs = math.abs(self.velocity_y)
+        self.velocity_y = clamp_to_max(self.velocity_y, self.max_y, velo_abs)
+
+        -- Check collision
+        dest = self.position.y + self.velocity_y * dt
+        self.is_down = is_raycast_down(self, dest)
+        local is_up = is_raycast_up(self, dest)
+        if self.is_down then
+            self.velocity_y = self.velocity_y / 2
+            self.can_jump = true
+            self.jump_time = 0
+
+            self.hang_time = self.max_hang
+            self.is_slide = true
+
+            self.wall_jump = 0
+            self.wall_jump_time = 0
+
+            -- On wall actions
+        elseif self.wall ~= 0 then
+            if self.hang_time > 0 then
+                if self.velocity_y <= 0 then
+                    self.velocity_y = 0
+                    self.hang_time = self.hang_time - dt
+                elseif self.is_slide then
+                    self.is_slide = false
+                    self.jump_time = self.jump_time - self.wall_slide
+                end
+            end
+
+            if not is_up then self.position.y = dest end
+        elseif not is_up then
             self.position.y = dest
         end
-    elseif not is_up then
-        self.position.y = dest
-    end
 
-    go.set_position(self.position)
+        go.set_position(self.position)
+    end
 end
 
 function on_message(self, message_id, message, sender)
@@ -258,10 +275,12 @@ function on_message(self, message_id, message, sender)
             msg.post("/map#black_collision", "enable")
             msg.post("/map#white_collision", "disable")
             msg.post("/black", "enable")
+            active = hash("black")
         else
             msg.post("/map#white_collision", "enable")
             msg.post("/map#black_collision", "disable")
             msg.post("/white", "enable")
+            active = hash("white")
         end
 
     elseif message_id == hash("enable") then
@@ -274,38 +293,34 @@ function on_input(self, action_id, action)
     if action_id == LEFT then
         if action.pressed then
             if self.wall == 0 then
-                self.steering = - 1
+                self.steering = self.steering - 1
             else
                 timer.delay(0.2, false, function()
                     if self.left_pressed then
-                        self.steering = - 1
+                        self.steering = self.steering - 1
                     end
                 end)
                 self.left_pressed = true
             end
         elseif action.released then
             self.left_pressed = false
-            if self.wall == 0 then
-                self.steering = 0
-            end
+                self.steering = self.steering + 1
         end
     elseif action_id == RIGHT then
         if action.pressed then
             if self.wall == 0 then
-                self.steering = 1
+                self.steering = self.steering + 1
             else
                 timer.delay(0.2, false, function()
                     if self.right_pressed then
-                        self.steering = 1
+                        self.steering = self.steering + 1
                     end
                 end)
                 self.right_pressed = true
             end
         elseif action.released then
             self.right_pressed = false
-            if self.wall == 0 then
-                self.steering = 0
-            end
+                self.steering = self.steering - 1
         end
     elseif action_id == UP then
         if action.pressed then

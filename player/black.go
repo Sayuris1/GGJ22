@@ -18,6 +18,36 @@ components {
     type: PROPERTY_TYPE_HASH
   }
 }
+components {
+  id: "change_l"
+  component: "/player/black_change.particlefx"
+  position {
+    x: -4.0
+    y: -21.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.57357645
+    w: 0.81915206
+  }
+}
+components {
+  id: "change_r"
+  component: "/player/black_change.particlefx"
+  position {
+    x: -4.0
+    y: -21.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -0.57357645
+    w: 0.81915206
+  }
+}
 embedded_components {
   id: "sprite"
   type: "sprite"
