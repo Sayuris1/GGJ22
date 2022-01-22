@@ -57,38 +57,40 @@ convex_hulls {
 }
 convex_hulls {
   index: 56
+  count: 4
+  collision_group: "white_win"
+}
+convex_hulls {
+  index: 60
+  count: 4
+  collision_group: "black_win"
+}
+convex_hulls {
+  index: 64
   count: 0
   collision_group: ""
 }
 convex_hulls {
-  index: 56
+  index: 64
   count: 0
   collision_group: ""
 }
 convex_hulls {
-  index: 56
-  count: 0
-  collision_group: ""
+  index: 64
+  count: 4
+  collision_group: "white_win"
 }
 convex_hulls {
-  index: 56
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 56
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 56
-  count: 0
-  collision_group: ""
+  index: 68
+  count: 4
+  collision_group: "black_win"
 }
 collision_groups: "black"
 collision_groups: "black_hit"
+collision_groups: "black_win"
 collision_groups: "white"
 collision_groups: "white_hit"
+collision_groups: "white_win"
 extrude_borders: 2
 inner_padding: 0
 sprite_trim_mode: SPRITE_TRIM_MODE_OFF

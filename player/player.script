@@ -150,7 +150,6 @@ function update(self, dt)
     if active == self.type then
         ---------- Movement update ----------
         ----- X direction -----
-        print(self.velocity_x, self.velocity_y)
         if self.velocity_y < -55 then
             sprite.play_flipbook(".", "down")
         elseif self.velocity_y > 55 then
@@ -284,18 +283,27 @@ function on_message(self, message_id, message, sender)
     if message_id == CONTACT and message.enter then
         go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD,
                    vmath.vector3(0, 0, 1), go.EASING_LINEAR, 0.1, 0, function()
-            msg.post(".", "disable")
-            self.is_jump_anim = true
-            if self.type == hash("white") then
-                msg.post("/map#black_collision", "enable")
-                msg.post("/map#white_collision", "disable")
-                msg.post("/black", "enable")
-                active = hash("black")
+            if message.other_group == hash("white_hit") or message.other_group ==
+                hash("black_hit") then
+
+                msg.post(".", "disable")
+                self.is_jump_anim = true
+                sound.play("/sound#hit")
+                if self.type == hash("white") then
+                    msg.post("/map#black_collision", "enable")
+                    msg.post("/map#white_collision", "disable")
+                    msg.post("/black", "enable")
+                    active = hash("black")
+                else
+                    msg.post("/map#white_collision", "enable")
+                    msg.post("/map#black_collision", "disable")
+                    msg.post("/white", "enable")
+                    active = hash("white")
+                end
             else
-                msg.post("/map#white_collision", "enable")
-                msg.post("/map#black_collision", "disable")
-                msg.post("/white", "enable")
-                active = hash("white")
+                sound.play("/sound#win", nil, function()
+                    msg.post("main:/proxies#main", "next_lvl")
+                end)
             end
         end)
 
@@ -354,6 +362,7 @@ function on_input(self, action_id, action)
                 self.velocity_y = 0
                 self.is_jump = true
                 self.can_jump = false
+                sound.play("/sound#jump")
                 if self.is_jump_anim then
                     self.is_jump_anim = false
                     go.animate(".", "scale", go.PLAYBACK_ONCE_PINGPONG,
@@ -367,6 +376,7 @@ function on_input(self, action_id, action)
                 self.is_wall_jump = true
                 self.wall_jump = self.wall
                 self.wall_jump_time = 0
+                sound.play("/sound#jump")
                 if self.is_jump_anim then
                     self.is_jump_anim = false
                     go.animate(".", "scale", go.PLAYBACK_ONCE_PINGPONG,

@@ -78,6 +78,7 @@ embedded_components {
   "restitution: 0.5\n"
   "group: \"black_player\"\n"
   "mask: \"black_hit\"\n"
+  "mask: \"black_win\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

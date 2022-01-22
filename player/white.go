@@ -73,6 +73,7 @@ embedded_components {
   "restitution: 0.5\n"
   "group: \"white_player\"\n"
   "mask: \"white_hit\"\n"
+  "mask: \"white_win\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"
