@@ -6,7 +6,7 @@ function init(self)
     msg.post(".", "acquire_input_focus")
 
     self.current_lvl = 1
-    self.proxy_url = msg.url("#lvl1")
+    self.proxy_url = msg.url("#lvl" .. self.current_lvl)
 
     msg.post(self.proxy_url, "load")
 end

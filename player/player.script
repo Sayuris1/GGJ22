@@ -28,6 +28,11 @@ local function is_raycast_sides(self, dest)
     to = vmath.vector3(from);
     to.x = dest + 16
     local is_ru = physics.raycast(from, to, self.groups, option)
+    -- Middle
+    from = vmath.vector3(self.position);
+    to = vmath.vector3(from);
+    to.x = dest + 16
+    local is_rm= physics.raycast(from, to, self.groups, option)
 
     -- Left
     -- Bottom
@@ -42,10 +47,15 @@ local function is_raycast_sides(self, dest)
     to = vmath.vector3(from);
     to.x = dest - 16
     local is_lu = physics.raycast(from, to, self.groups, option)
+    -- Middle
+    from = vmath.vector3(self.position);
+    to = vmath.vector3(from);
+    to.x = dest - 16
+    local is_lm = physics.raycast(from, to, self.groups, option)
 
-    if is_lb or is_lu then
+    if is_lb or is_lu or is_lm then
         return -1
-    elseif is_rb or is_ru then
+    elseif is_rb or is_ru or is_rm then
         return 1
     else
         return 0
@@ -132,7 +142,7 @@ function init(self)
 
     go.property("max_wall_jump", 0.4)
     go.property("wall_jump_speed", 4000)
-    go.property("wall_jump_side", 30)
+    go.property("wall_jump_side", 20)
 
     go.property("type", hash("white"))
 
