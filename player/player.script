@@ -273,15 +273,39 @@ function on_input(self, action_id, action)
     -- Get steering
     if action_id == LEFT then
         if action.pressed then
-            self.steering = self.steering - 1
+            if self.wall == 0 then
+                self.steering = - 1
+            else
+                timer.delay(0.2, false, function()
+                    if self.left_pressed then
+                        self.steering = - 1
+                    end
+                end)
+                self.left_pressed = true
+            end
         elseif action.released then
-            self.steering = self.steering + 1
+            self.left_pressed = false
+            if self.wall == 0 then
+                self.steering = 0
+            end
         end
     elseif action_id == RIGHT then
         if action.pressed then
-            self.steering = self.steering + 1
+            if self.wall == 0 then
+                self.steering = 1
+            else
+                timer.delay(0.2, false, function()
+                    if self.right_pressed then
+                        self.steering = 1
+                    end
+                end)
+                self.right_pressed = true
+            end
         elseif action.released then
-            self.steering = self.steering - 1
+            self.right_pressed = false
+            if self.wall == 0 then
+                self.steering = 0
+            end
         end
     elseif action_id == UP then
         if action.pressed then
