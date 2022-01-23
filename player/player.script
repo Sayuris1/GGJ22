@@ -291,6 +291,7 @@ end
 
 function on_message(self, message_id, message, sender)
     if message_id == CONTACT and message.enter then
+        self.is_jump_anim = false
         go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD,
                    vmath.vector3(0, 0, 1), go.EASING_LINEAR, 0.1, 0, function()
             if message.other_group == hash("white_hit") or message.other_group ==
