@@ -8297,6 +8297,22 @@ layers {
     rotate90: 0
   }
   cell {
+    x: 8
+    y: 1
+    tile: 0
+    h_flip: 0
+    v_flip: 0
+    rotate90: 0
+  }
+  cell {
+    x: 9
+    y: 1
+    tile: 0
+    h_flip: 0
+    v_flip: 0
+    rotate90: 0
+  }
+  cell {
     x: 19
     y: 1
     tile: 0
