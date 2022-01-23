@@ -36,8 +36,8 @@ instances {
   id: "white"
   prototype: "/player/white.go"
   position {
-    x: 497.0
-    y: -49.0
+    x: -579.0
+    y: -310.0
     z: 1.0
   }
   rotation {
@@ -76,8 +76,8 @@ instances {
   id: "black"
   prototype: "/player/black.go"
   position {
-    x: -489.0
-    y: -2.0
+    x: 569.0
+    y: 320.0
     z: 0.0
   }
   rotation {
