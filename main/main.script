@@ -3,10 +3,9 @@ local UNLOADED = hash("proxy_unloaded")
 local LOADED = hash("proxy_loaded")
 
 function init(self)
-    msg.post("@render:", "clear_color", { color = vmath.vector4(1, 0, 0, 0) })
     msg.post(".", "acquire_input_focus")
 
-    self.current_lvl = 1
+    self.current_lvl = 10
     self.proxy_url = msg.url("#lvl" .. self.current_lvl)
 
     msg.post(self.proxy_url, "load")
