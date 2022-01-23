@@ -104,7 +104,6 @@ local active = hash("white")
 
 function init(self)
     msg.post(".", "acquire_input_focus")
-    --msg.post("@render:", "clear_color", { color = vmath.vector4(1, 0, 0, 0) })
     -- Movement variables
     self.start_pos = go.get_position()
     self.position = self.start_pos
