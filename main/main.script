@@ -2,6 +2,7 @@ local NEXT_LVL = hash("next_lvl")
 local UNLOADED = hash("proxy_unloaded")
 local LOADED = hash("proxy_loaded")
 
+
 function init(self)
     msg.post(".", "acquire_input_focus")
 
